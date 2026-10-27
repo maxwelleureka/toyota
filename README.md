@@ -3,7 +3,7 @@
 ### Then start
 At first build project:
 ``` bash
-colcon build --packages-select car_gazebo toyota
+colcon build --packages-select car_gazebo toyota car_control
 ```
 ``` bash
 source install/setup.bash
