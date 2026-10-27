@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+
+    <xacro:macro name="traction_joint" params="joint max_vel:=50">
+        <joint name="${joint}">
+            <command_interface name="velocity">
+                <param name="min">-${max_vel}</param>
+                <param name="max">${max_vel}</param>
+            </command_interface>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+    </xacro:macro>
+
+
+    <xacro:macro name="steering_joint" params="joint max_angle:=0.7">
+        <joint name="${joint}">
+            <command_interface name="position">
+                <param name="min">-${max_angle}</param>
+                <param name="max">${max_angle}</param>
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_value">0.0</param>
+            </state_interface>
+            <state_interface name="velocity"/>
+        </joint>
+    </xacro:macro>
+
+</robot>

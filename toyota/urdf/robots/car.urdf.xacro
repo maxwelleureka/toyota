@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot name="car" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:arg name="robot_name" default="car"/>
+    <xacro:arg name="robot_namespace" default="$(arg robot_name)"/>
+
+    <xacro:include filename="$(find toyota)/urdf/components/base/base.urdf.xacro" />
+    <xacro:include filename="$(find toyota)/urdf/components/wheels/wheel.urdf.xacro" />
+    <xacro:include filename="$(find toyota)/urdf/components/wheels/steering_wheel.urdf.xacro" />
+    <xacro:include filename="$(find toyota)/urdf/components/sensors/lidar.urdf.xacro" />
+    <xacro:include filename="$(find toyota)/urdf/components/plugins/control.urdf.xacro" />
+    <xacro:include filename="$(find toyota)/urdf/components/plugins/transmission.urdf.xacro" />
+    <xacro:include filename="$(find toyota)/urdf/components/plugins/gz_control.urdf.xacro" />
+    <xacro:gz_control namespace="$(arg robot_namespace)" />
+
+    <xacro:base />
+
+
+    <xacro:wheel prefix="rear_left" parent="base_link" reflection="-1">
+        <origin xyz="-1.15 0.8 -0.15" rpy="0 0 0"/>
+    </xacro:wheel>
+
+    <xacro:wheel prefix="rear_right" parent="base_link" reflection="1">
+        <origin xyz="-1.15 -0.8 -0.15" rpy="0 0 0"/>
+    </xacro:wheel>
+
+
+    <xacro:steering_wheel prefix="front_left" parent="base_link" reflection="-1">
+        <origin xyz="1.3 0.8 0.15" rpy="0 0 0"/>
+    </xacro:steering_wheel>
+
+    <xacro:steering_wheel prefix="front_right" parent="base_link" reflection="1">
+        <origin xyz="1.3 -0.8 0.15" rpy="0 0 0"/>
+    </xacro:steering_wheel>
+
+    <xacro:lidar prefix="lidar" parent="base_link" ns="$(arg robot_namespace)">
+        <origin xyz="-0.3 0.0 0.86" rpy="0.0 0.0 0.0"/>
+    </xacro:lidar>
+
+    <xacro:control>
+        <transmissions>
+            <xacro:traction_joint joint="rear_left_wheel_joint"/>
+            <xacro:traction_joint joint="rear_right_wheel_joint"/>
+            <xacro:steering_joint joint="front_left_steering_joint"/>
+            <xacro:steering_joint joint="front_right_steering_joint"/>
+        </transmissions>
+    </xacro:control>
+
+</robot>

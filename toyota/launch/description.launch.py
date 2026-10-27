@@ -1,0 +1,70 @@
+import os
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.substitutions import Command
+from launch_ros.descriptions import ParameterValue
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+
+def generate_launch_description():
+    robot_xacro_path = os.path.join(get_package_share_directory('toyota'), 'urdf/robots', 'car.urdf.xacro')
+    namespace = LaunchConfiguration('namespace')
+    use_sim_time = LaunchConfiguration('use_sim_time')
+
+
+    declare_namespace_cmd = DeclareLaunchArgument(
+        name='namespace',
+        default_value='car',
+        description='Top-level namespace'
+    )
+
+    declare_use_sim_time_cmd = DeclareLaunchArgument(
+        name='use_sim_time',
+        default_value='false',
+        description='Use simulation (Gazebo) clock if true'
+    )
+
+    robot_state_publisher_cmd = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        name='robot_state_publisher',
+        output='screen',
+        namespace=namespace,
+        parameters=[{'robot_description': ParameterValue(Command(['xacro ', robot_xacro_path, ' robot_namespace:=', namespace]), value_type=str)},
+                    {'use_sim_time': use_sim_time}],
+        remappings=[('/tf','tf'),
+                    ('/tf_static','tf_static')]
+    )
+
+    joint_state_publisher_cmd = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher',
+        output='screen',
+        namespace=namespace,
+        parameters=[{'use_sim_time': use_sim_time}]
+    )
+
+    # ackermann_spawner = Node(
+    #     package='controller_manager',
+    #     executable='spawner',
+    #     arguments=['ackermann_steering_controller',
+    #             '--controller-manager', '/car/controller_manager'],
+    #     output='screen',
+    # )
+
+    # Create the launch description and populate
+    ld = LaunchDescription()
+
+    # Declare the launch options
+    ld.add_action(declare_use_sim_time_cmd)
+    ld.add_action(declare_namespace_cmd)
+
+    # Add the actions to launch all of the nodes
+    ld.add_action(robot_state_publisher_cmd)
+    ld.add_action(joint_state_publisher_cmd)
+
+    # ld.add_action(ackermann_spawner)
+
+    return ld
